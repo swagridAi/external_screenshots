@@ -10,6 +10,9 @@ from config import OPENAI_API_KEY, OPENAI_MODEL, OPENAI_MAX_TOKENS
 
 logger = logging.getLogger(__name__)
 
+# Declare global variables
+global client, openai_module
+
 # Initialize OpenAI client with safeguards for version compatibility
 client = None
 openai_module = None
@@ -20,8 +23,8 @@ try:
     try:
         client = OpenAI(api_key=OPENAI_API_KEY)
         logger.info("Using modern OpenAI client")
-    except TypeError as e:
-        # If there's a TypeError (like the proxies issue), log it
+    except Exception as e:
+        # If there's an error, log it
         logger.warning(f"Error initializing modern OpenAI client: {str(e)}")
         client = None
 except ImportError:
@@ -49,6 +52,8 @@ def extract_table_from_image(image_path):
             - If successful, returns (True, table data dict)
             - If failed, returns (False, error message)
     """
+    global client, openai_module
+    
     try:
         # Validate inputs
         if not OPENAI_API_KEY:
