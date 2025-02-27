@@ -24,9 +24,9 @@ SENDER_URL = f"http://{SENDER_IP}:{SENDER_PORT}"
 
 # Try to load API keys from secrets.py first (preferred method)
 try:
-    from secrets import OPENAI_API_KEY as SECRET_OPENAI_API_KEY
+    from api_keys import OPENAI_API_KEY as SECRET_OPENAI_API_KEY
     OPENAI_API_KEY = SECRET_OPENAI_API_KEY
-    logger.info("Loaded OpenAI API key from secrets.py")
+    logger.info("Loaded OpenAI API key from api_keys.py")
 except ImportError:
     # Fall back to environment variables if secrets.py not found
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')

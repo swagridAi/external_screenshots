@@ -89,12 +89,12 @@ if not exist .env (
     echo %YELLOW%    .env file already exists, skipping.%NC%
 )
 
-:: Create secrets.py if it doesn't exist
-if not exist secrets.py (
-    copy secrets.py.example secrets.py > nul
-    echo %GREEN%    Created secrets.py file from template%NC%
+:: Create api_keys.py if it doesn't exist
+if not exist api_keys.py (
+    copy api_keys.py.example api_keys.py > nul
+    echo %GREEN%    Created api_keys.py file from template%NC%
 ) else (
-    echo %YELLOW%    secrets.py file already exists, skipping.%NC%
+    echo %YELLOW%    api_keys.py file already exists, skipping.%NC%
 )
 
 :: Create necessary directories
@@ -114,11 +114,11 @@ set /p configure_api="%BOLD%Do you want to configure your OpenAI API key now? (y
 if /i "!configure_api!"=="y" (
     set /p api_key="%BOLD%Enter your OpenAI API key:%NC% "
     
-    :: Add to secrets.py - using PowerShell for reliable file manipulation
-    powershell -Command "(Get-Content secrets.py) -replace 'your_openai_api_key_here', '!api_key!' | Set-Content secrets.py"
-    echo %GREEN%    API key added to secrets.py%NC%
+    :: Add to api_keys.py - using PowerShell for reliable file manipulation
+    powershell -Command "(Get-Content api_keys.py) -replace 'your_openai_api_key_here', '!api_key!' | Set-Content api_keys.py"
+    echo %GREEN%    API key added to api_keys.py%NC%
 ) else (
-    echo %YELLOW%%BOLD%[!] You will need to add your OpenAI API key to secrets.py before using the table extraction feature.%NC%
+    echo %YELLOW%%BOLD%[!] You will need to add your OpenAI API key to api_keys.py before using the table extraction feature.%NC%
 )
 
 :: Sender IP configuration
