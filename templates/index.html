@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screenshot to Table Converter</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Screenshot to Table Converter</h1>
+      <p>Capture screenshots, crop tables, and extract data with AI</p>
+    </header>
+    
+    <div class="toolbar">
+      <button id="capture-btn" class="btn primary">Capture Screenshot (Space)</button>
+      <button id="crop-btn" class="btn secondary hidden">Crop Selection</button>
+      <button id="extract-table-btn" class="btn action hidden">Extract Table Data</button>
+      <button id="reset-btn" class="btn danger hidden">Reset</button>
+    </div>
+    
+    <div id="status-container" class="hidden status-message"></div>
+    
+    <div id="image-container" class="hidden crop-container">
+      <img id="preview">
+    </div>
+    
+    <div id="result-container" class="hidden">
+      <h3>Cropped Image:</h3>
+      <img id="cropped-result">
+    </div>
+    
+    <div id="loading-container" class="loading hidden">
+      <div class="spinner"></div>
+      <p>Processing image... This may take a few seconds...</p>
+    </div>
+    
+    <div id="table-container" class="table-container hidden">
+      <div class="tab">
+        <button class="tablinks active" onclick="openTab(event, 'table-view')">Table View</button>
+        <button class="tablinks" onclick="openTab(event, 'json-view')">JSON</button>
+        <button class="tablinks" onclick="openTab(event, 'csv-view')">CSV</button>
+      </div>
+      
+      <div id="table-view" class="tabcontent active">
+        <h3>Extracted Table</h3>
+        <div class="download-buttons">
+          <button id="download-csv-btn" class="btn secondary">Download as CSV</button>
+          <button id="download-json-btn" class="btn secondary">Download as JSON</button>
+        </div>
+        <div id="table-output"></div>
+      </div>
+      
+      <div id="json-view" class="tabcontent">
+        <h3>JSON Output</h3>
+        <pre id="json-output"></pre>
+      </div>
+      
+      <div id="csv-view" class="tabcontent">
+        <h3>CSV Output</h3>
+        <pre id="csv-output"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <script src="/static/js/main.js"></script>
+</body>
+</html>

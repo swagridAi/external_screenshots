@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+*.exe
+*.dll
+*.pyd
+
+# Secrets and configurations
+.env
+secrets.py
+config.local.py
+api_keys.json
+
+# Application data folders
+data/screenshots/
+data/cropped_screenshots/
+data/temp/
+screenshots/
+cropped_screenshots/
+temp/
+sent_screenshots/
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.suo
+*.user
+*.userosscache
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
