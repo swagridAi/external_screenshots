@@ -5,14 +5,37 @@ import os
 import base64
 import json
 import logging
-from openai import OpenAI
 
 from config import OPENAI_API_KEY, OPENAI_MODEL, OPENAI_MAX_TOKENS
 
 logger = logging.getLogger(__name__)
 
-# Initialize OpenAI client
-client = OpenAI(api_key=OPENAI_API_KEY)
+# Initialize OpenAI client with safeguards for version compatibility
+client = None
+openai_module = None
+
+try:
+    # Try modern OpenAI client
+    from openai import OpenAI
+    try:
+        client = OpenAI(api_key=OPENAI_API_KEY)
+        logger.info("Using modern OpenAI client")
+    except TypeError as e:
+        # If there's a TypeError (like the proxies issue), log it
+        logger.warning(f"Error initializing modern OpenAI client: {str(e)}")
+        client = None
+except ImportError:
+    logger.warning("Modern OpenAI client not available")
+
+# If modern client failed, try legacy approach
+if client is None:
+    try:
+        import openai as openai_module
+        openai_module.api_key = OPENAI_API_KEY
+        logger.info("Using legacy OpenAI module")
+    except ImportError:
+        logger.error("Neither modern nor legacy OpenAI client could be initialized")
+        # We'll handle this case in the extraction function
 
 def extract_table_from_image(image_path):
     """
@@ -58,27 +81,53 @@ def extract_table_from_image(image_path):
         
         logger.info("Sending request to OpenAI API for table extraction")
         
-        # Call OpenAI API
-        response = client.chat.completions.create(
-            model=OPENAI_MODEL,
-            messages=prompt,
-            max_tokens=OPENAI_MAX_TOKENS,
-            response_format={"type": "json_object"}
-        )
+        content = None
+        # Try using the appropriate client method
+        if client:
+            # Modern client method
+            try:
+                response = client.chat.completions.create(
+                    model=OPENAI_MODEL,
+                    messages=prompt,
+                    max_tokens=OPENAI_MAX_TOKENS,
+                    response_format={"type": "json_object"}
+                )
+                content = response.choices[0].message.content
+            except Exception as e:
+                logger.error(f"Error with modern OpenAI client: {str(e)}")
+                # Fall back to legacy approach if modern fails
+                client = None
+        
+        # If modern client failed or wasn't available, try legacy
+        if client is None:
+            if openai_module:
+                try:
+                    response = openai_module.ChatCompletion.create(
+                        model=OPENAI_MODEL,
+                        messages=prompt,
+                        max_tokens=OPENAI_MAX_TOKENS,
+                        response_format={"type": "json_object"}
+                    )
+                    content = response['choices'][0]['message']['content']
+                except Exception as e:
+                    return False, f"Error with legacy OpenAI client: {str(e)}"
+            else:
+                return False, "No OpenAI client available. Please check your installation."
         
         # Parse the response as JSON
-        content = response.choices[0].message.content
-        table_data = json.loads(content)
-        
-        logger.info("Received table data from OpenAI API")
-        
-        # Validate and normalize the response structure
-        validated_data = _validate_and_normalize_table_data(table_data)
-        
-        return True, validated_data
+        if content:
+            table_data = json.loads(content)
+            logger.info("Received table data from OpenAI API")
+            
+            # Validate and normalize the response structure
+            validated_data = _validate_and_normalize_table_data(table_data)
+            
+            return True, validated_data
+        else:
+            return False, "No content received from OpenAI API"
         
     except json.JSONDecodeError as e:
-        error_msg = f"Error parsing JSON response from OpenAI: {str(e)}\nResponse content: {content}"
+        error_msg = f"Error parsing JSON response from OpenAI: {str(e)}\nResponse content: {content if 'content' in locals() else 'No content'}"
         logger.error(error_msg)
         return False, error_msg
         
